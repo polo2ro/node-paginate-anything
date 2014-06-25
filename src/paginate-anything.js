@@ -1,15 +1,20 @@
 'use strict';
 
 /**
- * create a 206 partial content HTTP response from 
- * a mongoose result set
+ * Modify the express response for pagination, return 2 properties to use in a query
  * 
- * @see https://github.com/begriffs/clean_pagination 
+ * @url https://github.com/begriffs/clean_pagination 
+ * @url http://expressjs.com/4x/api.html#req.params
+ * @url http://expressjs.com/4x/api.html#res.status
  * 
- * @param	object	req				request to get headers from
- * @param	object	res				response to complete
+ * @param	object	req				express request to get headers from
+ * @param	object	res				express response to complete
  * @param	int		total_items 	total number of items available, can be Infinity
  * @param	int		max_range_size	
+ * 
+ * @return Object 
+ * 			.limit	Number of items to return	
+ * 			.skip	Zero based position for the first item to return
  */ 
 exports = module.exports = function(req, res, total_items, max_range_size)
 {
