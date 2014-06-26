@@ -34,13 +34,13 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 	}
 	
 	
-	res.header('Accept-Ranges', 'items');
-	res.header('Range-Unit', 'items');
+	res.setHeader('Accept-Ranges', 'items');
+	res.setHeader('Range-Unit', 'items');
 	
 	if (0 == total_items)
 	{
 		// pagination not appliquable
-		res.header('Content-Range', '*/'+total_items);
+		res.setHeader('Content-Range', '*/'+total_items);
 		return;
 	}
 	
@@ -60,8 +60,8 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 	
 	if (range.from > range.to || range.from >= total_items)
 	{
-		res.status(416); // Requested range unsatisfiable
-		res.header('Content-Range', '*/'+total_items);
+		res.statusCode = 416; // Requested range unsatisfiable
+		res.setHeader('Content-Range', '*/'+total_items);
 		return;
 	}
 	
@@ -73,16 +73,16 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 	
 	var report_total = total_items < Infinity ? total_items : '*';
 	
-	res.header('Content-Range', range.from+'-'+available_to+'/'+report_total);
+	res.setHeader('Content-Range', range.from+'-'+available_to+'/'+report_total);
 	
 	var available_limit = available_to - range.from + 1;
 	
 
 	if (available_limit < total_items)
 	{
-		res.status(206); // Partial contents
+		res.statusCode = 206; // Partial contents
 	} else {
-		res.status(200); // OK (all items)
+		res.statusCode = 200; // OK (all items)
 	}
 	
 
@@ -132,7 +132,7 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 		));
 	}
 	
-	res.header('Link', links.join(', '));
+	res.setHeader('Link', links.join(', '));
 	
 	
 	// return values named from mongoose methods
