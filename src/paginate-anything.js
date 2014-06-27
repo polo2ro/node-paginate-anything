@@ -65,13 +65,27 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 		return;
 	}
 	
-	var available_to = Math.min(
-		range.to, 
-		total_items -1, 
-		range.from + max_range_size -1
-	);
+	if (total_items < Infinity)
+	{
+		var available_to = Math.min(
+			range.to, 
+			total_items -1, 
+			range.from + max_range_size -1
+		);
+		
+		var report_total = total_items;
+		
+	} else {
+		var available_to = Math.min(
+			range.to, 
+			range.from + max_range_size -1
+		);
+		
+		var report_total = '*';
+	}
 	
-	var report_total = total_items < Infinity ? total_items : '*';
+	
+	
 	
 	res.setHeader('Content-Range', range.from+'-'+available_to+'/'+report_total);
 	
