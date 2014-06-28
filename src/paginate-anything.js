@@ -1,16 +1,17 @@
 'use strict';
 
 /**
- * Modify the express response for pagination, return 2 properties to use in a query
+ * Modify the http response for pagination, return 2 properties to use in a query
  * 
  * @url https://github.com/begriffs/clean_pagination 
- * @url http://expressjs.com/4x/api.html#req.params
- * @url http://expressjs.com/4x/api.html#res.status
+ * @url http://nodejs.org/api/http.html#http_class_http_clientrequest
+ * @url http://nodejs.org/api/http.html#http_class_http_serverresponse
  * 
- * @param	object	req				express request to get headers from
- * @param	object	res				express response to complete
- * @param	int		total_items 	total number of items available, can be Infinity
- * @param	int		max_range_size	
+ * 
+ * @param	http.ClientRequest	req				http request to get headers from
+ * @param	http.ServerResponse	res				http response to complete
+ * @param	int					total_items 	total number of items available, can be Infinity
+ * @param	int					max_range_size	
  * 
  * @return Object 
  * 			.limit	Number of items to return	
@@ -122,8 +123,8 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 		
 		if (total_items < Infinity)
 		{
-			var last_start = ((total_items-1) / available_limit) * available_limit;
-			
+			var last_start = (total_items / available_limit) * (available_limit-1);
+
 			links.push(buildLink('last',  
 				last_start, 
 				last_start + requested_limit - 1

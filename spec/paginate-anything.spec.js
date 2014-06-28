@@ -46,6 +46,46 @@ function paginatedRequest(total_items, range, callback)
 }
 
 
+/**
+ * Get the ranges for each link in the link header
+ * @param	http.ServerResponse		response
+ */  
+function linkHeader(response)
+{
+	var link = {};
+	var arr = response.headers['link'].split(',');
+	for(var i=0; i<arr.length; i++)
+	{
+		var rel = null;
+		var items = null;
+		
+		var elements = arr[i].trim().split(';');
+		for(var j=0; j<elements.length; j++)
+		{
+			var f = elements[j].trim().match(/([^=]+)="([^"]+)"/);
+			
+			if (f)
+			{
+				if (f[1] === 'rel') {
+					rel = f[2];
+				}
+				
+				if (f[1] === 'items') {
+					items = f[2];
+				}
+			}
+		}
+		
+		if (rel && items)
+		{
+			link[rel] = items;
+		}
+	}
+	
+	return link;
+}
+
+
 
 describe('node-paginate-anything', function PaginateTestSuite() {
 
@@ -59,8 +99,13 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 	
 	
 	it('Server should respond with partial content', function (done){
-		paginatedRequest(100, '10-20', function(response){
-			expect(response.headers['content-range']).toBe('10-20/100');
+		paginatedRequest(100, '10-19', function(response){
+			var links = linkHeader(response);
+			expect(links.prev).toBe('0-9');
+			expect(links.first).toBe('0-9');
+			expect(links.next).toBe('20-29');
+			expect(links.last).toBe('90-99');
+			expect(response.headers['content-range']).toBe('10-19/100');
 			expect(response.statusCode).toBe(206);
 			done();
 		});
@@ -95,6 +140,11 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 	it('Server should respond 200 OK and correct range for infinity total items', function (done){
 
 		paginatedRequest(Infinity, '50-55', function(response){
+			
+			var links = linkHeader(response);
+			expect(links.prev).toBe('44-49');
+			expect(links.first).toBe('0-5');
+			
 			expect(response.headers['content-range']).toBe('50-55/*');
 			expect(response.statusCode).toBe(200);
 			done();

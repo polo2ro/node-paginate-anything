@@ -1,13 +1,12 @@
 {
   "name": "node-paginate-anything",
-  "description": "Modify the express response for pagination, return 2 properties to use in a query",
+  "description": "Node server side for the angular-paginate-anything directive. Modify the http response for pagination, return 2 properties to use in a query",
   "version": "0.0.1",
   "private": true,
   "scripts": {
 	"test": "jasmine-node spec/"
   },
   "dependencies": {
-    "express": "^4.1.2"
   },
   "devDependencies": {
     "jasmine-node": "~1.14.3"
