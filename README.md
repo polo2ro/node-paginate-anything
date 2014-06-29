@@ -26,12 +26,10 @@ This nodejs module add the required headers in the http response to paginate the
 
 parameters:
 
+---------------|---------------
 ClientRequest  | [clientRequest](http://nodejs.org/api/http.html#http_class_http_clientrequest) object from the native http module or from an express app. 
----------------|---------------
 ServerResponse | [ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse) object to modify before sending the http response.
----------------|---------------
 total_items    | total number of items in the result set.
----------------|---------------
 max_range_size | angular-paginate-anything send is own requested range in the request, this parameter specify the maximum value.
 
 
