@@ -24,8 +24,9 @@ This nodejs module add the required headers in the http response to paginate the
   mongooseQuery.skip(queryParameters.skip);
 ```
 
-parameters:
 
+
+parameter      | Description
 ---------------|---------------
 ClientRequest  | [clientRequest](http://nodejs.org/api/http.html#http_class_http_clientrequest) object from the native http module or from an express app. 
 ServerResponse | [ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse) object to modify before sending the http response.
