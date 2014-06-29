@@ -15,14 +15,14 @@ This nodejs module add the required headers in the http response to paginate the
 
 ### Usage
 
-
+```JavaScript
   var paginate = require('node_modules/node-paginate-anything/src/paginate-anything');
   
   var queryParameters = paginate([http.ClientRequest](http://nodejs.org/api/http.html#http_class_http_clientrequest), [http.ServerResponse](http://nodejs.org/api/http.html#http_class_http_serverresponse), total_items, max_range_size);
   
   mongooseQuery.limit(queryParameters.limit);
   mongooseQuery.skip(queryParameters.skip);
-
+```
 
 ### Benefits
 
