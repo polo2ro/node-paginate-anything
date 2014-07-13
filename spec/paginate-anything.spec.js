@@ -127,11 +127,21 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 	});
 	
 	
-	it('Server should respond 200 OK if pagination not appliquable because of empty total items', function (done){
+	it('accepts a range starting from 0 when there are no items', function (done){
 
-		paginatedRequest(0, '25-1', function(response){
+		paginatedRequest(0, '0-9', function(response){
 			expect(response.headers['content-range']).toBe('*/0');
-			expect(response.statusCode).toBe(200);
+			expect(response.statusCode).toBe(204);
+			done();
+		});
+	});
+	
+	
+	it('refuses a range with nonzero start when there are no items', function (done){
+
+		paginatedRequest(0, '1-10', function(response){
+			expect(response.headers['content-range']).toBe('*/0');
+			expect(response.statusCode).toBe(416);
 			done();
 		});
 	});

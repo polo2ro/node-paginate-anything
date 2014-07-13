@@ -38,12 +38,7 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 	res.setHeader('Accept-Ranges', 'items');
 	res.setHeader('Range-Unit', 'items');
 	
-	if (0 == total_items)
-	{
-		// pagination not appliquable
-		res.setHeader('Content-Range', '*/'+total_items);
-		return;
-	}
+	
 	
 	var range =  {
 		from: 0,
@@ -59,7 +54,7 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 		}
 	}
 	
-	if (range.from > range.to || range.from >= total_items)
+	if (range.from > range.to || (range.from > 0 && range.from >= total_items))
 	{
 		res.statusCode = 416; // Requested range unsatisfiable
 		res.setHeader('Content-Range', '*/'+total_items);
@@ -91,6 +86,15 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 	res.setHeader('Content-Range', range.from+'-'+available_to+'/'+report_total);
 	
 	var available_limit = available_to - range.from + 1;
+	
+	
+	
+	if (0 == available_limit)
+	{
+		res.statusCode = 204; // no content
+		res.setHeader('Content-Range', '*/0');
+		return;
+	}
 	
 
 	if (available_limit < total_items)
