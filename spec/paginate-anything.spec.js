@@ -97,8 +97,9 @@ function linkHeader(response)
 
 describe('node-paginate-anything', function PaginateTestSuite() {
 
-	it('Server should respond with full range by default', function (done){
+	it('respond with full range on rangeless request', function (done){
 		http.get('http://localhost:3000?total_items=10&max_range_size=1000', function(response){
+			expect(response.headers['accept-ranges']).toBe('items');
 			expect(response.headers['content-range']).toBe('0-9/10');
 			expect(response.statusCode).toBe(200);
 			done();
@@ -106,7 +107,42 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 	});
 	
 	
-	it('Server should respond with partial content', function (done){
+	it('works normally on rangeless request if max_range >= total', function (done){
+		
+		http.get('http://localhost:3000?total_items=100&max_range_size=100', function(response){
+			expect(response.headers['accept-ranges']).toBe('items');
+			expect(response.headers['content-range']).toBe('0-99/100');
+			expect(response.statusCode).toBe(200);
+			done();
+		});
+	});
+	
+	
+	it('truncates response on rangeless request if max_range < total', function (done){
+		http.get('http://localhost:3000?total_items=101&max_range_size=100', function(response){
+			expect(response.headers['accept-ranges']).toBe('items');
+			expect(response.headers['content-range']).toBe('0-99/101');
+			expect(response.statusCode).toBe(206);
+			done();
+		});
+	});
+	
+	
+	it('truncate oversized range', function (done){
+		paginatedRequest(101, 100, '0-100', function(response){
+			expect(response.headers['accept-ranges']).toBe('items');
+			expect(response.headers['content-range']).toBe('0-99/101');
+			expect(response.statusCode).toBe(206);
+			done();
+		});
+	});
+	
+	
+
+	
+	
+	
+	it('server should respond with partial content and links', function (done){
 		paginatedRequest(100, 1000, '10-19', function(response){
 			var links = linkHeader(response);
 			expect(links.prev).toBe('0-9');
@@ -119,7 +155,7 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 		});
 	});
 	
-	it('Server should respond with a requested range unsatisfiable response', function (done){
+	it('server should respond with a requested range unsatisfiable response', function (done){
 		paginatedRequest(5, 1000, '20-25', function(response){
 			expect(response.headers['content-range']).toBe('*/5');
 			expect(response.statusCode).toBe(416);
@@ -136,25 +172,7 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 	
 	
 
-	it('works normally on rangeless request if max_range >= total', function (done){
-		
-		http.get('http://localhost:3000?total_items=100&max_range_size=100', function(response){
-			expect(response.headers['accept-ranges']).toBe('items');
-			expect(response.statusCode).toBe(200);
-			done();
-		});
-	});
-	
-	
-	it('truncates response on rangeless request if max_range < total', function (done){
-		http.get('http://localhost:3000?total_items=101&max_range_size=100', function(response){
-			expect(response.headers['accept-ranges']).toBe('items');
-			expect(response.headers['content-range']).toBe('0-99/101');
-			expect(response.statusCode).toBe(206);
-			done();
-		});
-	});
-	
+
 	
 	
 	
@@ -178,7 +196,38 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 	});
 	
 	
-	it('Server should respond partial content and correct range for infinity total items', function (done){
+	it('refuses range start past end', function (done){
+
+		paginatedRequest(101, 100, '101-', function(response){
+			expect(response.headers['content-range']).toBe('*/101');
+			expect(response.statusCode).toBe(416);
+			done();
+		});
+	});
+	
+	
+	it('allows one-item requests', function (done){
+
+		paginatedRequest(101, 100, '0-0', function(response){
+			expect(response.headers['content-range']).toBe('0-0/101');
+			expect(response.statusCode).toBe(206);
+			done();
+		});
+	});
+	
+	
+	it('handles ranges beyond collection length via truncation', function (done){
+
+		paginatedRequest(101, 100, '50-200', function(response){
+			expect(response.headers['content-range']).toBe('50-100/101');
+			expect(response.statusCode).toBe(206);
+			done();
+		});
+	});
+	
+	
+	
+	it('respond partial content and correct range for infinity total items', function (done){
 
 		paginatedRequest(Infinity, 1000, '50-55', function(response){
 			
@@ -187,6 +236,27 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 			expect(links.first).toBe('0-5');
 			
 			expect(response.headers['content-range']).toBe('50-55/*');
+			expect(response.statusCode).toBe(206);
+			done();
+		});
+	});
+	
+	
+	
+	it('next page range can extend beyond last item', function (done){
+		paginatedRequest(101, 100, '50-89', function(response){
+			var links = linkHeader(response);
+			expect(links.next).toBe('90-129');
+			expect(response.statusCode).toBe(206);
+			done();
+		});
+	});
+	
+	
+	it('previous page range cannot go negative', function (done){
+		paginatedRequest(101, 100, '10-99', function(response){
+			var links = linkHeader(response);
+			expect(links.prev).toBe('0-89');
 			expect(response.statusCode).toBe(206);
 			done();
 		});
