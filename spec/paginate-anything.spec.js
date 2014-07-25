@@ -290,7 +290,7 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 	});
 	
 	
-	// omitting the end number asks for everything
+	// TODO: omitting the end number asks for everything
 	
 	
 	it('omitting the end number omits in first link too', function (done){
@@ -310,19 +310,50 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 		});
 	});
 	
-	// prev link with omitted end number shifts by max page
+
+	it('prev link with omitted end number shifts by max page', function (done){
+		paginatedRequest(Infinity, 25, '50-', function(response){
+			var links = linkHeader(response);
+			expect(links.prev).toBe('25-');
+			done();
+		});
+	});
 	
-	// shifts penultimate page to beginning, preserving length
+
+	it('shifts penultimate page to beginning, preserving length', function (done){
+		paginatedRequest(100, 101, '10-49', function(response){
+			var links = linkHeader(response);
+			expect(links.prev).toBe('0-39');
+			expect(links.first).toBe('0-39');
+			done();
+		});
+	});
 	
-	// prev is the left inverse of next
+	// TODO: prev is the left inverse of next
 	
-	// for from > to-from, next is the right inverse of prev
+	// TODO: for from > to-from, next is the right inverse of prev
 	
-	// omits prev and first links at start
 	
-	// omits next and last links at end
+	it('omits prev and first links at start', function (done){
+		paginatedRequest(100, 101, '0-9', function(response){
+			var links = linkHeader(response);
+			expect(links.prev).toBe(undefined);
+			expect(links.first).toBe(undefined);
+			done();
+		});
+	});
 	
-	// preserves query parameters in link headers
+	it('omits next and last links at end', function (done){
+		paginatedRequest(100, 101, '90-99', function(response){
+			var links = linkHeader(response);
+			expect(links.last).toBe(undefined);
+			expect(links.next).toBe(undefined);
+			done();
+		});
+	});
+	
+	
+	// TODO: preserves query parameters in link headers
 	
 	
 
