@@ -61,6 +61,12 @@ function paginatedRequest(total_items, max_range_size, range, callback)
 function linkHeader(response)
 {
 	var link = {};
+	
+	if (response.headers['link'] == undefined)
+	{
+		return link;
+	}
+	
 	var arr = response.headers['link'].split(',');
 	for(var i=0; i<arr.length; i++)
 	{
@@ -169,11 +175,7 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 		});
 		
 	});
-	
-	
 
-
-	
 	
 	
 	it('accepts a range starting from 0 when there are no items', function (done){
@@ -244,23 +246,84 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 	
 	
 	it('next page range can extend beyond last item', function (done){
-		paginatedRequest(101, 100, '50-89', function(response){
+		paginatedRequest(100, 100, '50-89', function(response){
 			var links = linkHeader(response);
 			expect(links.next).toBe('90-129');
-			expect(response.statusCode).toBe(206);
 			done();
 		});
 	});
 	
 	
 	it('previous page range cannot go negative', function (done){
-		paginatedRequest(101, 100, '10-99', function(response){
+		paginatedRequest(100, 100, '10-99', function(response){
 			var links = linkHeader(response);
 			expect(links.prev).toBe('0-89');
-			expect(response.statusCode).toBe(206);
 			done();
 		});
 	});
+	
+	
+	it('first page range always starts at zero', function (done){
+		paginatedRequest(100, 100, '63-72', function(response){
+			var links = linkHeader(response);
+			expect(links.first).toBe('0-9');
+			done();
+		});
+	});
+	
+	
+	it('last page range can extend beyond the last item', function (done){
+		paginatedRequest(100, 100, '0-6', function(response){
+			var links = linkHeader(response);
+			expect(links.last).toBe('98-104');
+			done();
+		});
+	});
+	
+
+	it('infinite collections have no last page', function (done){
+		paginatedRequest(Infinity, 100, '0-9', function(response){
+			var links = linkHeader(response);
+			expect(links.last).toBe(undefined);
+			done();
+		});
+	});
+	
+	
+	// omitting the end number asks for everything
+	
+	
+	it('omitting the end number omits in first link too', function (done){
+		paginatedRequest(Infinity, 1000000, '50-', function(response){
+			var links = linkHeader(response);
+			expect(links.first).toBe('0-');
+			done();
+		});
+	});
+	
+
+	it('next link with omitted end number shifts by max page', function (done){
+		paginatedRequest(Infinity, 1000000, '50-', function(response){
+			var links = linkHeader(response);
+			expect(links.next).toBe('1000050-');
+			done();
+		});
+	});
+	
+	// prev link with omitted end number shifts by max page
+	
+	// shifts penultimate page to beginning, preserving length
+	
+	// prev is the left inverse of next
+	
+	// for from > to-from, next is the right inverse of prev
+	
+	// omits prev and first links at start
+	
+	// omits next and last links at end
+	
+	// preserves query parameters in link headers
+	
 	
 
 	

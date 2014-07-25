@@ -29,8 +29,8 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 			return null; 
 		}
 		return {
-			from: +m[1],
-			to: m[2] ? +m[2] : null
+			from: parseInt(m[1]),
+			to: m[2] ? parseInt(m[2]) : Infinity
 		};
 	}
 	
@@ -39,6 +39,7 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 	res.setHeader('Range-Unit', 'items');
 	
 	
+	max_range_size = parseInt(max_range_size);
 	
 	var range =  {
 		from: 0,
@@ -54,7 +55,7 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 		}
 	}
 	
-	if (range.from > range.to || (range.from > 0 && range.from >= total_items))
+	if ((null !== range.to && range.from > range.to) || (range.from > 0 && range.from >= total_items))
 	{
 		res.statusCode = 416; // Requested range unsatisfiable
 		res.setHeader('Content-Range', '*/'+total_items);
@@ -115,7 +116,10 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 		return '<'+req.url+'>; rel="'+rel+'"; items="'+items_from+'-'+to+'"';
 	}
 	
+	
+
 	var requested_limit = range.to - range.from + 1;
+
 	var links = [];
 	
 	if (available_to < total_items -1)
@@ -127,7 +131,7 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 		
 		if (total_items < Infinity)
 		{
-			var last_start = (total_items / available_limit) * (available_limit-1);
+			var last_start = Math.floor((total_items-1) / available_limit) * available_limit;
 
 			links.push(buildLink('last',  
 				last_start, 
