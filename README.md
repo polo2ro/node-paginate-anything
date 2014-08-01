@@ -16,7 +16,7 @@ This nodejs module add the required headers in the http response to paginate the
 ### Usage
 
 ```JavaScript
-  var paginate = require('node_modules/node-paginate-anything/src/paginate-anything');
+  var paginate = require('node-paginate-anything');
   
   var queryParameters = paginate(ClientRequest, ServerResponse, total_items, max_range_size);
   
