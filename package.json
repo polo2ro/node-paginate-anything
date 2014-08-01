@@ -7,6 +7,10 @@
   "scripts": {
 	"test": "jasmine-node spec/"
   },
+  "repository" : {
+    "type": "git",
+    "url": "https://github.com/polo2ro/node-paginate-anything.git"
+  },
   "dependencies": {
   },
   "devDependencies": {
