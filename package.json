@@ -1,7 +1,7 @@
 {
   "name": "node-paginate-anything",
   "description": "Node server side for the angular-paginate-anything directive. Modify the http response for pagination, return 2 properties to use in a query",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "src/paginate-anything.js",
   "private": false,
   "scripts": {
