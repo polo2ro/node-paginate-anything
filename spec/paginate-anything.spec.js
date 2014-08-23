@@ -12,7 +12,24 @@ var server = http.createServer(function (req, res) {
 	var max_range_size 	= params.max_range_size;
 	
 	var p = paginate(req, res, total_items, max_range_size);
-	res.end('Hello');
+    
+    var input = 'Item ';
+    var body = '';
+    var multiplier = total_items;
+    
+    while (true) {
+        if (multiplier & 1) {
+          body += input;
+        }
+        multiplier >>= 1;
+        if (multiplier) {
+          input += input;
+        } else {
+          break;
+        }
+    }
+
+	res.end(body);
 	req.connection.destroy();
 });
 server.listen(3000);
@@ -30,17 +47,22 @@ function paginatedRequest(total_items, max_range_size, range, callback)
 	{
 		total_items = '*';
 	}
-	
+    
+    if (range !== null) {
+        var headers = {
+		  'range-unit': 'items',
+		  'range': range
+		};
+	} else {
+        var headers = {};
+    }
 	
 	var options = {
 	  hostname: 'localhost',
 	  port: 3000,
 	  path: '/?total_items='+total_items+'&max_range_size='+max_range_size,
 	  method: 'GET',
-	  headers: {
-		  'range-unit': 'items',
-		  'range': range
-		}
+	  headers: headers
 	};
 
 	var req = http.request(options, callback);
@@ -176,6 +198,22 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 		
 	});
 
+
+    it('returns empty body when there are zero total items', function (done){
+
+		paginatedRequest(0, 1000, null, function(response){
+			expect(response.statusCode).toBe(204);
+            
+            response.setEncoding('utf8');
+            response.on('data', function (chunk) {
+                expect(chunk).toBe('');
+            });
+            
+            response.on('end', function() {
+                done();
+            });
+		});
+	});
 	
 	
 	it('accepts a range starting from 0 when there are no items', function (done){

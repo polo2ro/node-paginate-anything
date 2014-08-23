@@ -57,7 +57,11 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 	
 	if ((null !== range.to && range.from > range.to) || (range.from > 0 && range.from >= total_items))
 	{
-		res.statusCode = 416; // Requested range unsatisfiable
+        if (total_items > 0 || range.from !== 0) {
+            res.statusCode = 416; // Requested range unsatisfiable
+        } else {
+            res.statusCode = 204; // No content
+        }
 		res.setHeader('Content-Range', '*/'+total_items);
 		return;
 	}
