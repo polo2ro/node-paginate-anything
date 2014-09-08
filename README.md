@@ -2,6 +2,8 @@ node-paginate-anything
 ======================
 
 [![Build Status](https://travis-ci.org/polo2ro/node-paginate-anything.svg?branch=master)](https://travis-ci.org/polo2ro/node-paginate-anything)
+[![Dependency Status](https://david-dm.org/polo2ro/node-paginate-anything.svg)](https://david-dm.org/polo2ro/node-paginate-anything)
+[![devDependency Status](https://david-dm.org/polo2ro/node-paginate-anything/dev-status.png)](https://david-dm.org/polo2ro/node-paginate-anything#info=devDependencies)
 
 nodejs server side module for [angular-pagninate-anything](https://github.com/begriffs/angular-paginate-anything)
 
