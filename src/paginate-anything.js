@@ -37,6 +37,7 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 	
 	res.setHeader('Accept-Ranges', 'items');
 	res.setHeader('Range-Unit', 'items');
+	res.setHeader('Access-Control-Expose-Headers', 'Content-Range, Accept-Ranges, Range-Unit');
 	
 	
 	max_range_size = parseInt(max_range_size);
