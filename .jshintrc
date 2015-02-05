@@ -1,6 +1,7 @@
 {
-  "node"   : true,
-  "jasmine"   : true,
-  "unused" : true,
-  "expr": true
+    "node"      : true,
+    "jasmine"   : true,
+    "unused"    : true,
+    "expr"      : true,
+    "camelcase" : true
 }
