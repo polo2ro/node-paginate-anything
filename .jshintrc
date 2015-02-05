@@ -1,0 +1,6 @@
+{
+  "node"   : true,
+  "jasmine"   : true,
+  "unused" : true,
+  "expr": true
+}

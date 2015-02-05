@@ -5,7 +5,7 @@
   "main": "src/paginate-anything.js",
   "private": false,
   "scripts": {
-	"test": "jasmine-node spec/"
+	"test": "node_modules/jasmine-node/bin/jasmine-node spec"
   },
   "repository" : {
     "type": "git",
