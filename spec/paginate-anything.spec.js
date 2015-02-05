@@ -6,14 +6,14 @@ var server = http.createServer(function (req, res) {
 	var url = require('url').parse(req.url, true);
 	var params = url.query;
 
-	var total_items 	= '*' === params.total_items ? Infinity : params.total_items;
-	var max_range_size 	= params.max_range_size;
+	var totalItems 	= '*' === params.totalItems ? Infinity : params.totalItems;
+	var maxRangeSize 	= params.maxRangeSize;
 
-	paginate(req, res, total_items, max_range_size);
+	paginate(req, res, totalItems, maxRangeSize);
 
     var input = 'Item ';
     var body = '';
-    var multiplier = total_items;
+    var multiplier = totalItems;
 
     while (true) {
         if (multiplier & 1) {
@@ -35,15 +35,15 @@ server.listen(3000);
 
 
 /**
- * @param	int		total_items  	Total number of items on server (can be Infinity)
- * @param	int		max_range_size	The max_range_size value used on server
+ * @param	int		totalItems  	Total number of items on server (can be Infinity)
+ * @param	int		maxRangeSize	The maxRangeSize value used on server
  * @param	string	range			range used by the client query
  */
-function paginatedRequest(total_items, max_range_size, range, callback)
+function paginatedRequest(totalItems, maxRangeSize, range, callback)
 {
-	if (total_items >= Infinity)
+	if (totalItems >= Infinity)
 	{
-		total_items = '*';
+		totalItems = '*';
 	}
   var headers;
   if (range !== null) {
@@ -58,7 +58,7 @@ function paginatedRequest(total_items, max_range_size, range, callback)
 	var options = {
 	  hostname: 'localhost',
 	  port: 3000,
-	  path: '/?total_items='+total_items+'&max_range_size='+max_range_size,
+	  path: '/?totalItems='+totalItems+'&maxRangeSize='+maxRangeSize,
 	  method: 'GET',
 	  headers: headers
 	};
@@ -124,7 +124,7 @@ function linkHeader(response)
 describe('node-paginate-anything', function PaginateTestSuite() {
 
 	it('respond with full range on rangeless request', function (done){
-		http.get('http://localhost:3000?total_items=10&max_range_size=1000', function(response){
+		http.get('http://localhost:3000?totalItems=10&maxRangeSize=1000', function(response){
 			expect(response.headers['accept-ranges']).toBe('items');
 			expect(response.headers['content-range']).toBe('0-9/10');
 			expect(response.statusCode).toBe(200);
@@ -134,7 +134,7 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 
 
 	it('works normally on rangeless request if max_range >= total', function (done){
-		http.get('http://localhost:3000?total_items=100&max_range_size=100', function(response){
+		http.get('http://localhost:3000?totalItems=100&maxRangeSize=100', function(response){
 			expect(response.headers['accept-ranges']).toBe('items');
 			expect(response.headers['content-range']).toBe('0-99/100');
 			expect(response.statusCode).toBe(200);
@@ -144,7 +144,7 @@ describe('node-paginate-anything', function PaginateTestSuite() {
 
 
 	it('truncates response on rangeless request if max_range < total', function (done){
-		http.get('http://localhost:3000?total_items=101&max_range_size=100', function(response){
+		http.get('http://localhost:3000?totalItems=101&maxRangeSize=100', function(response){
 			expect(response.headers['accept-ranges']).toBe('items');
 			expect(response.headers['content-range']).toBe('0-99/101');
 			expect(response.statusCode).toBe(206);

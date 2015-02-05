@@ -10,14 +10,14 @@
  *
  * @param	http.ClientRequest	req				http request to get headers from
  * @param	http.ServerResponse	res				http response to complete
- * @param	int					total_items 	total number of items available, can be Infinity
- * @param	int					max_range_size
+ * @param	int					totalItems 	total number of items available, can be Infinity
+ * @param	int					maxRangeSize
  *
  * @return Object
  * 			.limit	Number of items to return
  * 			.skip	Zero based position for the first item to return
  */
-exports = module.exports = function(req, res, total_items, max_range_size)
+exports = module.exports = function(req, res, totalItems, maxRangeSize)
 {
 
 	/**
@@ -38,11 +38,11 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 	res.setHeader('Range-Unit', 'items');
 	res.setHeader('Access-Control-Expose-Headers', 'Content-Range, Accept-Ranges, Range-Unit');
 
-	max_range_size = parseInt(max_range_size);
+	maxRangeSize = parseInt(maxRangeSize);
 
 	var range =  {
 		from: 0,
-		to: (total_items -1)
+		to: (totalItems -1)
 	};
 
 	if ('items' === req.headers['range-unit'])
@@ -54,51 +54,51 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 		}
 	}
 
-	if ((null !== range.to && range.from > range.to) || (range.from > 0 && range.from >= total_items))
+	if ((null !== range.to && range.from > range.to) || (range.from > 0 && range.from >= totalItems))
 	{
-        if (total_items > 0 || range.from !== 0) {
+        if (totalItems > 0 || range.from !== 0) {
             res.statusCode = 416; // Requested range unsatisfiable
         } else {
             res.statusCode = 204; // No content
         }
-		res.setHeader('Content-Range', '*/'+total_items);
+		res.setHeader('Content-Range', '*/'+totalItems);
 		return;
 	}
 
-	var available_to;
-  var report_total;
+	var availableTo;
+  var reportTotal;
 
-	if (total_items < Infinity)
+	if (totalItems < Infinity)
 	{
-		available_to = Math.min(
+		availableTo = Math.min(
 			range.to,
-			total_items -1,
-			range.from + max_range_size -1
+			totalItems -1,
+			range.from + maxRangeSize -1
 		);
 
-		report_total = total_items;
+		reportTotal = totalItems;
 
 	} else {
-		available_to = Math.min(
+		availableTo = Math.min(
 			range.to,
-			range.from + max_range_size -1
+			range.from + maxRangeSize -1
 		);
 
-		report_total = '*';
+		reportTotal = '*';
 	}
 
-	res.setHeader('Content-Range', range.from+'-'+available_to+'/'+report_total);
+	res.setHeader('Content-Range', range.from+'-'+availableTo+'/'+reportTotal);
 
-	var available_limit = available_to - range.from + 1;
+	var availableLimit = availableTo - range.from + 1;
 
-	if ( 0 === available_limit)
+	if ( 0 === availableLimit)
 	{
 		res.statusCode = 204; // no content
 		res.setHeader('Content-Range', '*/0');
 		return;
 	}
 
-	if (available_limit < total_items)
+	if (availableLimit < totalItems)
 	{
 		res.statusCode = 206; // Partial contents
 	} else {
@@ -106,44 +106,44 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 	}
 
 	// Links
-	function buildLink(rel, items_from, items_to)
+	function buildLink(rel, itemsFrom, itemsTo)
 	{
-		var to = items_to < Infinity ? items_to : '';
-		return '<'+req.url+'>; rel="'+rel+'"; items="'+items_from+'-'+to+'"';
+		var to = itemsTo < Infinity ? itemsTo : '';
+		return '<'+req.url+'>; rel="'+rel+'"; items="'+itemsFrom+'-'+to+'"';
 	}
 
-	var requested_limit = range.to - range.from + 1;
+	var requestedLimit = range.to - range.from + 1;
 	var links = [];
 
-	if (available_to < total_items -1)
+	if (availableTo < totalItems -1)
 	{
 		links.push(buildLink('next',
-			available_to + 1,
-			available_to + requested_limit
+			availableTo + 1,
+			availableTo + requestedLimit
 		));
 
-		if (total_items < Infinity)
+		if (totalItems < Infinity)
 		{
-			var last_start = Math.floor((total_items-1) / available_limit) * available_limit;
+			var lastStart = Math.floor((totalItems-1) / availableLimit) * availableLimit;
 
 			links.push(buildLink('last',
-				last_start,
-				last_start + requested_limit - 1
+				lastStart,
+				lastStart + requestedLimit - 1
 			));
 		}
 	}
 
 	if (range.from > 0)
 	{
-		var previous_from = Math.max(0, range.from - Math.min(requested_limit, max_range_size));
+		var previousFrom = Math.max(0, range.from - Math.min(requestedLimit, maxRangeSize));
 		links.push(buildLink('prev',
-			previous_from,
-			previous_from + requested_limit - 1
+			previousFrom,
+			previousFrom + requestedLimit - 1
 		));
 
 		links.push(buildLink('first',
 			0,
-			requested_limit-1
+			requestedLimit-1
 		));
 	}
 
@@ -151,7 +151,7 @@ exports = module.exports = function(req, res, total_items, max_range_size)
 
   // return values named from mongoose methods
 	return 	{
-		limit: available_limit,
+		limit: availableLimit,
 		skip: range.from
 	};
 };
