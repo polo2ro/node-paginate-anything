@@ -8,12 +8,12 @@
  * @url http://nodejs.org/api/http.html#http_class_http_serverresponse
  *
  *
- * @param	http.ClientRequest	req				http request to get headers from
- * @param	http.ServerResponse	res				http response to complete
- * @param	int					totalItems 	total number of items available, can be Infinity
- * @param	int					maxRangeSize
+ * @param	{http.ClientRequest}	req				http request to get headers from
+ * @param	{http.ServerResponse}	res				http response to complete
+ * @param	{int}					totalItems 	    total number of items available, can be Infinity
+ * @param	{int}					maxRangeSize
  *
- * @return Object
+ * @return {Object}
  * 			.limit	Number of items to return
  * 			.skip	Zero based position for the first item to return
  */
