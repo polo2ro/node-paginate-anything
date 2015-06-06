@@ -5,7 +5,7 @@
   "main": "src/paginate-anything.js",
   "private": false,
   "scripts": {
-	"test": "node_modules/jasmine-node/bin/jasmine-node spec"
+	"test": "node_modules/jasmine-node/bin/jasmine-node spec/ && node_modules/jshint/bin/jshint src/"
   },
   "repository" : {
     "type": "git",
@@ -14,7 +14,8 @@
   "dependencies": {
   },
   "devDependencies": {
-    "jasmine-node": "~1.14.3"
+    "jasmine-node": "~1.14.3",
+    "jshint": "latest"
   },
   "engine": {
     "node": ">=0.6"
