@@ -49,3 +49,7 @@ maxRangeSize   | angular-paginate-anything send is own requested range in the re
   interval of items.
 * **Semantic HTTP.** Built in strict conformance to RFCs 2616 and 5988.
 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/polo2ro/node-paginate-anything/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
