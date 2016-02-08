@@ -51,5 +51,3 @@ maxRangeSize   | angular-paginate-anything send is own requested range in the re
 
 
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/polo2ro/node-paginate-anything/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
